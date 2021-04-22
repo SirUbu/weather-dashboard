@@ -11,6 +11,9 @@
         <!-- custom style -->
         <link rel="stylesheet" href="./assets/css/style.css">
 
+        <!-- favicon icon -->
+        <link rel="icon" href="./assets/images/brightness-alt-high.svg" type="image/svg">
+
         <title>Weather Dashboard</title>
     </head>
     <body>
@@ -18,29 +21,32 @@
             <h1 class="bg-dark text-light p-3 text-center">Weather Dashboard</h1>
         </header>
 
-        <main>
-            <!-- search bar and history -->
-            <section>
-                <!-- search bar/form -->
-                <form action="">
-                    <input type="text">
-                    <input type="submit">
-                </form>
-                <!-- search results -->
-                <div></div>
-            </section>
+        <main class="container">
+            <div class="row">
+                <!-- search bar and history -->
+                <section class="col-sm-12 col-md-3 bg-light">
+                    <!-- search bar/form -->
+                    <form class="d-grid gap-2 mt-2">
+                        <input type="text" class="form-control" placeholder="City, State, Country" id="userSearch">
+                        <button type="submit" class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search...
+                        </button>
+                    </form>
+                    <!-- search results -->
+                    <div class="mt-2" id="searchHistory"></div>
+                </section>
 
-            <!-- API display -->
-            <section>
-                <!-- current weather -->
-                <div></div>
-                <!-- 5 day forecast -->
-                <div></div>
-            </section>
+                <!-- API display -->
+                <section>
+                    <!-- current weather -->
+                    <div></div>
+                    <!-- 5 day forecast -->
+                    <div></div>
+                </section>
+            </div>
         </main>
 
-        <footer>
-
+        <footer class="bg-dark text-light text-center p-2 fixed-bottom">
+            <div>&copy;Sir Ubu <bdo dir="rtl">&copy;Sir Ubu</bdo></div>
         </footer>
 
         <!-- popper for bootstrap -->
