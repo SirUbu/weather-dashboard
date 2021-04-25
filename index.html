@@ -19,7 +19,7 @@
     <body>
         <div class="min-vh-100">
             <header>
-                <h1 class="bg-dark text-light p-3 text-center">Weather Dashboard</h1>
+                <h1 class="bg-dark bg-gradient text-info p-3 text-center">Weather Dashboard</h1>
             </header>
             
             <main class="container">
@@ -27,9 +27,9 @@
                     <!-- search bar and history -->
                     <section class="col-sm-12 col-md-3 bg-light">
                         <!-- search bar/form -->
-                        <form class="d-grid gap-2 mt-2">
+                        <form class="d-grid gap-2 mt-2 pb-2 border-bottom border-4 border-dark">
                             <input type="text" class="form-control" placeholder="City, State, Country" id="userSearch">
-                            <button type="submit" class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search...
+                            <button type="submit" class="btn btn-primary bg-gradient" id="searchBtn"><i class="fas fa-search"></i> Search...
                             </button>
                         </form>
                         
@@ -37,8 +37,8 @@
                         <div class="mt-2" id="searchHistory"></div>
                         
                         <!-- searchHistory clear -->
-                        <div class="d-grid mt-2 mb-2">
-                            <button class="btn btn-danger" id="clearBtn"><i class="far fa-trash-alt"></i> Clear History</button>
+                        <div class="d-grid mt-2 mb-2 pt-2 border-top border-4 border-dark">
+                            <button class="btn btn-danger bg-gradient" id="clearBtn"><i class="far fa-trash-alt"></i> Clear History</button>
                         </div>
                     </section>
                     
@@ -52,11 +52,13 @@
                 </div>
             </main>
             
-            <footer class="bg-dark text-light text-center p-2 fixed-bottom">
+            <footer class="bg-dark bg-gradient text-info text-center p-2 fixed-bottom">
                 <div>&copy;Sir Ubu <bdo dir="rtl">&copy;Sir Ubu</bdo></div>
             </footer>
         </div>
 
+        <!-- moment.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
         <!-- popper for bootstrap -->
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
         <!-- bootstrap js -->
