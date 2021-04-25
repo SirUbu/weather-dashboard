@@ -48,20 +48,39 @@ var displayWeather = function(data, city, country) {
     currentWeatherEl.text("").attr("class", "");
 
     // create card for weather info to be added to
-    var backgroundColor = "bg-secondary";
+    var currentWeatherCondition = data.current.weather[0].main;
+    var backgroundColor = "";
+    if (currentWeatherCondition === "Thunderstorm") {
+        backgroundColor = "bg-dark bg-gradient";
+    } else if (currentWeatherCondition === "Drizzle" || currentWeatherCondition === "Rain" || currentWeatherCondition === "Snow") {
+        backgroundColor = "bg-primary bg-gradient";
+    } else if (currentWeatherCondition === "Mist" || currentWeatherCondition === "Haze" || currentWeatherCondition === "Dust" || currentWeatherCondition === "Fog") {
+        backgroundColor = "bg-secondary bg-gradient";
+    } else if (currentWeatherCondition === "Smoke" || currentWeatherCondition === "Sand" || currentWeatherCondition === "Ash" || currentWeatherCondition === "Squall" || currentWeatherCondition === "Tornado") {
+        backgroundColor = "bg-danger bg-gradient";
+    } else if (currentWeatherCondition === "Clear") {
+        backgroundColor = "bg-warning bg-gradient";
+    } else if (currentWeatherCondition === "Clouds") {
+        backgroundColor = "bg-secondary bg-gradient";
+    } else {
+        backgroundColor = "bg-light bg-gradient"
+    }
+
     var cardEl = $("<div>").addClass(`card ${backgroundColor} text-light`);
 
-    var imgSrc = "./assets/images/cloud-fill.svg";
-    var imgAlt = "cloud";
+    var imgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@4x.png`;
+    var imgAlt = data.current.weather[0].description;
     var imgEl = $("<img>").attr("src", imgSrc).attr("alt", imgAlt).addClass("card-img p-1");
     cardEl.append(imgEl);
 
     var overlayEl = $("<div>").addClass("card-img-overlay");
 
-    var cardHeaderEl = $("<div>").addClass("card-header");
+    var cardHeaderEl = $("<div>").addClass("card-header d-flex justify-content-between");
     
     var cardTitleEl = $("<h4>").addClass("card-title").text(`${city}, ${country}`);
     cardHeaderEl.append(cardTitleEl);
+    var cardTitleSpanEl = $("<span>").text(moment().format("MMMM Do YYYY, h:mma"))
+    cardHeaderEl.append(cardTitleSpanEl);
 
     overlayEl.append(cardHeaderEl);
     
