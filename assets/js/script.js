@@ -20,12 +20,15 @@ var APISearch = function(userSearch) {
         })
         // pass to display function
         .then(function(cityData) {
+            // store city and country info to pass on
+            var city = cityData.name;
+            var country = cityData.sys.country;
             // store lon and lat
             var searchLon = cityData.coord.lon;
             var searchLat = cityData.coord.lat;
 
             // use searchLon and searchLat to fetch api of one call
-            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${searchLat}&lon=${searchLon}&appid=${APIKey}`)
+            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${searchLat}&lon=${searchLon}&units=imperial&appid=${APIKey}`)
                 .then(function(oneCallResponse) {
                     if(oneCallResponse.ok) {
                         return oneCallResponse.json();
@@ -34,14 +37,44 @@ var APISearch = function(userSearch) {
                     }
                 })
                 .then(function(oneCallData) {
-                    displayWeather(oneCallData);
+                    displayWeather(oneCallData, city, country);
                 })
         })
 };
 
 // function to display  weather to DOM
-var displayWeather = function(data) {
-    console.log(data);
+var displayWeather = function(data, city, country) {
+    // clear DOM
+    currentWeatherEl.text("").attr("class", "");
+
+    // create card for weather info to be added to
+    var backgroundColor = "bg-secondary";
+    var cardEl = $("<div>").addClass(`card ${backgroundColor} text-light`);
+
+    var imgSrc = "./assets/images/cloud-fill.svg";
+    var imgAlt = "cloud";
+    var imgEl = $("<img>").attr("src", imgSrc).attr("alt", imgAlt).addClass("card-img p-1");
+    cardEl.append(imgEl);
+
+    var overlayEl = $("<div>").addClass("card-img-overlay");
+
+    var cardHeaderEl = $("<div>").addClass("card-header");
+    
+    var cardTitleEl = $("<h4>").addClass("card-title").text(`${city}, ${country}`);
+    cardHeaderEl.append(cardTitleEl);
+
+    overlayEl.append(cardHeaderEl);
+    
+    var cardBodyEl = $("<div>").addClass("card-body");
+
+    var cardSubEl = $("<h5>").addClass("card-subtitle mb-2").text(`Timezone: ${data.timezone}`);
+    cardBodyEl.append(cardSubEl);
+
+    overlayEl.append(cardBodyEl);
+
+    cardEl.append(overlayEl);
+
+    currentWeatherEl.append(cardEl);
 };
 
 // button handlers
