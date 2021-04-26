@@ -6,6 +6,7 @@ var forecastEl = $("#forecast");
 var APISearch = function(userSearch) {
     // update DOM that search is happening
     currentWeatherEl.text("Searching Please Wait...").attr("class", "bg-warning text-center p-2");
+    forecastEl.text("");
 
     // store api key for reference
     var APIKey = "5ca19e2089c84836dfdfb8cf20c691ed";
@@ -37,8 +38,10 @@ var APISearch = function(userSearch) {
                         currentWeatherEl.text("Your search had no results").attr("class", "bg-danger p-2 text-center");
                     }
                 })
+                // pass data to display functions
                 .then(function(oneCallData) {
                     displayWeather(oneCallData, city, country);
+                    displayForecast(oneCallData);
                 })
         })
 };
@@ -137,15 +140,14 @@ var displayWeather = function(data, city, country) {
     cardEl.append(overlayEl);
     
     currentWeatherEl.append(cardEl);
+};
+
+var displayForecast = function(data) {
+    // reset DOM
+    forecastEl.text("");
 
     // store daily array and pass to forecast function
     var dailyArr = data.daily;
-    displayForecast(dailyArr);
-};
-
-var displayForecast = function(dailyArr) {
-    // reset DOM
-    forecastEl.text("");
 
     // loop through api daily array to create cards with basic info and display to DOM to show next 5 days forecast
     for (var i = 1; i < 6; i++) {
