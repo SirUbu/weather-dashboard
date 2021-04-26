@@ -1,6 +1,10 @@
 // store page objects to reference
 var currentWeatherEl = $("#currentWeather");
 var forecastEl = $("#forecast");
+var searchHistEl = $("#searchHistory");
+
+// global variable
+var searchHistArr = [];
 
 // function to fetch api
 var APISearch = function(userSearch) {
@@ -25,6 +29,7 @@ var APISearch = function(userSearch) {
             // store city and country info to pass on
             var city = cityData.name;
             var country = cityData.sys.country;
+
             // store lon and lat
             var searchLon = cityData.coord.lon;
             var searchLat = cityData.coord.lat;
@@ -40,7 +45,9 @@ var APISearch = function(userSearch) {
                 })
                 // pass data to display functions
                 .then(function(oneCallData) {
+                    // pass needed data to displayWeather function
                     displayWeather(oneCallData, city, country);
+                    // pass needed data to displayForecast function
                     displayForecast(oneCallData);
                 })
         })
@@ -142,6 +149,7 @@ var displayWeather = function(data, city, country) {
     currentWeatherEl.append(cardEl);
 };
 
+// function to update DOM with forecast
 var displayForecast = function(data) {
     // reset DOM
     forecastEl.text("");
@@ -197,13 +205,83 @@ var displayForecast = function(data) {
     }
 };
 
-// button handlers
+// function to add search to history
+var searchHistUpdate = function(userSearch) {
+    // add to searchHistArr
+    searchHistArr.push(userSearch);
+
+    // save local
+    saveLocal();
+
+    // call displaySearchHist
+    displaySearchHist();
+};
+
+// function to display search history to DOM
+var displaySearchHist = function() {
+    // clear search history area of DOM
+    searchHistEl.text("");
+
+    // loop through search history array and display to DOM
+    for(var i = 0; i < searchHistArr.length; i++) {
+        // create a clickable DOM element
+        var searchEl = $("<a>").attr("href", "#");
+        
+        var textEl = $("<div>").text(searchHistArr[i]).addClass("bg-secondary rounded-pill text-center mb-2 text-light");
+        searchEl.append(textEl);
+
+
+        searchHistEl.prepend(searchEl);
+    }
+};
+
+
+// function to save search history
+var saveLocal = function() {
+    // save local
+    localStorage.setItem("weatherSearchHist", JSON.stringify(searchHistArr));
+};
+
+// function to pull search history and update DOM
+var getLocal = function() {
+    // get local
+    searchHistArr = JSON.parse(localStorage.getItem("weatherSearchHist"));
+    if(!searchHistArr) {
+        searchHistArr = [];
+    }
+
+    // update dom
+    displaySearchHist();
+
+    // run resent search through api
+    if(searchHistArr.length > 0) {
+        var index = searchHistArr.length - 1;
+        APISearch(searchHistArr[index])
+    }
+};
+
+// function to clear search history
+
+
+// click handlers
+// new search
 $("#searchBtn").click(function(event) {
     event.preventDefault();
 
+    // get user entry
     var userSearch = $("#userSearch").val();
 
+    // pass user entry to API
     APISearch(userSearch);
+
+    // pass user entry to searchHistUpdate function
+    searchHistUpdate(userSearch);
 
     $("#userSearch").val("");
 });
+
+// clear search history
+
+// handler for search history item clicked
+
+getLocal();
