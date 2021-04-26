@@ -21,7 +21,7 @@ var APISearch = function(userSearch) {
             if(cityResponse.ok) {
                 return cityResponse.json();
             } else {
-                currentWeatherEl.text(`Error ${cityResponse.status}: ${cityResponse.statusText}`).attr("class", "bg-danger p-2 text-center");
+                throw new Error("Search had no results.");
             }
         })
         // pass to display function
@@ -40,7 +40,7 @@ var APISearch = function(userSearch) {
                     if(oneCallResponse.ok) {
                         return oneCallResponse.json();
                     } else {
-                        currentWeatherEl.text("Your search had no results").attr("class", "bg-danger p-2 text-center");
+                        throw new Error("Search had no results.");
                     }
                 })
                 // pass data to display functions
@@ -50,6 +50,9 @@ var APISearch = function(userSearch) {
                     // pass needed data to displayForecast function
                     displayForecast(oneCallData);
                 })
+        })
+        .catch(function(error) {
+            currentWeatherEl.text(error).attr("class", "bg-danger p-2 text-center");
         })
 };
 
@@ -268,6 +271,13 @@ $("#searchBtn").click(function(event) {
     // get user entry
     var userSearch = $("#userSearch").val();
 
+    // check that a search item was entered
+    if(!userSearch) {
+        currentWeatherEl.text("Please enter a valid search.").attr("class", "bg-danger text-center p-2");
+        forecastEl.text("");
+        return;
+    }
+
     // pass user entry to API
     APISearch(userSearch);
 
@@ -287,7 +297,7 @@ $("#clearBtn").click(function() {
 
     // update DOM
     searchHistEl.text("");
-    currentWeatherEl.text("");
+    currentWeatherEl.text("").attr("class", "");
     forecastEl.text("");
 });
 
