@@ -227,7 +227,7 @@ var displaySearchHist = function() {
         // create a clickable DOM element
         var searchEl = $("<a>").attr("href", "#");
         
-        var textEl = $("<div>").text(searchHistArr[i]).addClass("bg-secondary rounded-pill text-center mb-2 text-light");
+        var textEl = $("<div>").text(searchHistArr[i]).addClass("bg-secondary rounded-pill text-center mb-2 text-light p-1");
         searchEl.append(textEl);
 
 
@@ -260,9 +260,6 @@ var getLocal = function() {
     }
 };
 
-// function to clear search history
-
-
 // click handlers
 // new search
 $("#searchBtn").click(function(event) {
@@ -281,6 +278,18 @@ $("#searchBtn").click(function(event) {
 });
 
 // clear search history
+$("#clearBtn").click(function() {
+    // re-set searchHistArr
+    searchHistArr = [];
+
+    // remove localStorage
+    localStorage.removeItem("weatherSearchHist");
+
+    // update DOM
+    searchHistEl.text("");
+    currentWeatherEl.text("");
+    forecastEl.text("");
+});
 
 // handler for search history item clicked
 
