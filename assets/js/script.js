@@ -292,5 +292,11 @@ $("#clearBtn").click(function() {
 });
 
 // handler for search history item clicked
+$("#searchHistory").on("click", "div", function() {
+    // get target textContent
+    var prevSearch = this.textContent;
+    // pass clicked textContent into API array
+    APISearch(prevSearch);
+});
 
 getLocal();
