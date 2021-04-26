@@ -1,5 +1,6 @@
 // store page objects to reference
 var currentWeatherEl = $("#currentWeather");
+var forecastEl = $("#forecast");
 
 // function to fetch api
 var APISearch = function(userSearch) {
@@ -99,16 +100,16 @@ var displayWeather = function(data, city, country) {
     var weatherEl = $("<h3>").addClass("card-text mb-3").html(`Current Weather: ${currentWeatherCondition}, ${data.current.weather[0].description}`);
     cardBodyEl.append(weatherEl);
 
-    var tempEl = $("<h4>").addClass("card-text").html(`<i class="fas fa-temperature-high"></i> Current Temperature: ${data.current.temp}&deg f`);
+    var tempEl = $("<h4>").addClass("card-text").html(`<i class="fas fa-temperature-high"></i> Current Temperature: ${data.current.temp}&degF`);
     cardBodyEl.append(tempEl);
 
-    var feelsLikeEl = $("<h5>").addClass("card-text").html(`Feels like: ${data.current.feels_like}&deg f`);
+    var feelsLikeEl = $("<h5>").addClass("card-text").html(`Feels like: ${data.current.feels_like}&degF`);
     cardBodyEl.append(feelsLikeEl);
 
-    var dailyHighLow = $("<h5>").addClass("card-text mb-3").html(`High: ${data.daily[0].temp.max}&deg f, Low: ${data.daily[0].temp.min}&deg f`);
+    var dailyHighLow = $("<h5>").addClass("card-text mb-3").html(`High: ${data.daily[0].temp.max}&degF, Low: ${data.daily[0].temp.min}&degF`);
     cardBodyEl.append(dailyHighLow);
 
-    var windEl = $("<h4>").addClass("card-text mb-3").html(`<i class="fas fa-wind"></i> Wind: ${data.current.wind_speed} mph`);
+    var windEl = $("<h4>").addClass("card-text mb-3").html(`<i class="fas fa-wind"></i> Wind: ${data.current.wind_speed} MPH`);
     cardBodyEl.append(windEl);
 
     var humidityEl = $("<h4>").addClass("card-text mb-3").html(`<i class="fas fa-water"></i> Humidity: ${data.current.humidity}%`);
@@ -130,15 +131,68 @@ var displayWeather = function(data, city, country) {
     }
     var uviEl = $("<h4>").addClass("card-text").html(`<i class="fas fa-sun"></i> UV Index: <span class="${uvBackground}">${uvi}</span>`);
     cardBodyEl.append(uviEl);
-
-    // add loop here to go through the "daily" info from the API and create cards with the next 5 day forecast and append to body
-
-
+    
     overlayEl.append(cardBodyEl);
-
+    
     cardEl.append(overlayEl);
-
+    
     currentWeatherEl.append(cardEl);
+
+    // store daily array and pass to forecast function
+    var dailyArr = data.daily;
+    displayForecast(dailyArr);
+};
+
+var displayForecast = function(dailyArr) {
+    // reset DOM
+    forecastEl.text("");
+
+    // loop through api daily array to create cards with basic info and display to DOM to show next 5 days forecast
+    for (var i = 1; i < 6; i++) {
+        var dailyCardEl = $("<div>").addClass("card m-2 bg-light bg-gradient text-dark");
+
+        var dailyCardBodyEl = $("<div>").addClass("card-body");
+
+        var dayEl = $("<h5>").addClass("card-title").text(moment().add(i, 'days').format("MM/DD/YYYY"));
+        dailyCardBodyEl.append(dayEl);
+
+        var dayIconSrc = `http://openweathermap.org/img/wn/${dailyArr[i].weather[0].icon}.png`;
+        var dayIconAlt = dailyArr[i].weather[0].description;
+        var dayIconBackground = "";
+        if (dailyArr[i].weather[0].main === "Thunderstorm") {
+            dayIconBackground = "bg-dark bg-gradient";
+        } else if (dailyArr[i].weather[0].main === "Drizzle" || dailyArr[i].weather[0].main === "Rain" || dailyArr[i].weather[0].main === "Snow") {
+            dayIconBackground = "bg-primary bg-gradient";
+        } else if (dailyArr[i].weather[0].main === "Mist" || dailyArr[i].weather[0].main === "Haze" || dailyArr[i].weather[0].main === "Dust" || dailyArr[i].weather[0].main === "Fog") {
+            dayIconBackground = "bg-secondary bg-gradient";
+        } else if (dailyArr[i].weather[0].main === "Smoke" || dailyArr[i].weather[0].main === "Sand" || dailyArr[i].weather[0].main === "Ash" || dailyArr[i].weather[0].main === "Squall" || dailyArr[i].weather[0].main === "Tornado") {
+            dayIconBackground = "bg-danger bg-gradient";
+        } else if (dailyArr[i].weather[0].main === "Clear") {
+            dayIconBackground = "bg-warning bg-gradient";
+        } else if (dailyArr[i].weather[0].main === "Clouds") {
+            dayIconBackground = "bg-secondary bg-gradient";
+        } else {
+            dayIconBackground = "bg-light bg-gradient";
+        }
+        var dayIconEl = $("<img>").attr("src", dayIconSrc).attr("alt", dayIconAlt).addClass(`${dayIconBackground} rounded-circle`);
+        dailyCardBodyEl.append(dayIconEl);
+
+        var dayCondition = $("<h6>").addClass("card-text").html(`${dailyArr[i].weather[0].main}`);
+        dailyCardBodyEl.append(dayCondition);
+
+        var dayTemp = $("<h6>").addClass("card-text").html(`<i class="fas fa-temperature-high"></i> ${dailyArr[i].temp.max}&degF`);
+        dailyCardBodyEl.append(dayTemp);
+
+        var dayWind = $("<h6>").addClass("card-text").html(`<i class="fas fa-wind"></i> ${dailyArr[i].wind_speed}MPH`);
+        dailyCardBodyEl.append(dayWind);
+
+        var dayHumidity = $("<h6>").addClass("card-text").html(`<i class="fas fa-water"></i> ${dailyArr[i].humidity}%`);
+        dailyCardBodyEl.append(dayHumidity);
+
+        dailyCardEl.append(dailyCardBodyEl);
+
+        forecastEl.append(dailyCardEl);
+    }
 };
 
 // button handlers
