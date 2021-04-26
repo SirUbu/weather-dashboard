@@ -1,6 +1,10 @@
 // store page objects to reference
 var currentWeatherEl = $("#currentWeather");
 var forecastEl = $("#forecast");
+var searchHistEl = $("#searchHistory");
+
+// global variable
+var searchHistArr = [];
 
 // function to fetch api
 var APISearch = function(userSearch) {
@@ -17,7 +21,7 @@ var APISearch = function(userSearch) {
             if(cityResponse.ok) {
                 return cityResponse.json();
             } else {
-                currentWeatherEl.text(`Error ${cityResponse.status}: ${cityResponse.statusText}`).attr("class", "bg-danger p-2 text-center");
+                throw new Error("Search had no results.");
             }
         })
         // pass to display function
@@ -25,6 +29,7 @@ var APISearch = function(userSearch) {
             // store city and country info to pass on
             var city = cityData.name;
             var country = cityData.sys.country;
+
             // store lon and lat
             var searchLon = cityData.coord.lon;
             var searchLat = cityData.coord.lat;
@@ -35,14 +40,19 @@ var APISearch = function(userSearch) {
                     if(oneCallResponse.ok) {
                         return oneCallResponse.json();
                     } else {
-                        currentWeatherEl.text("Your search had no results").attr("class", "bg-danger p-2 text-center");
+                        throw new Error("Search had no results.");
                     }
                 })
                 // pass data to display functions
                 .then(function(oneCallData) {
+                    // pass needed data to displayWeather function
                     displayWeather(oneCallData, city, country);
+                    // pass needed data to displayForecast function
                     displayForecast(oneCallData);
                 })
+        })
+        .catch(function(error) {
+            currentWeatherEl.text(error).attr("class", "bg-danger p-2 text-center");
         })
 };
 
@@ -142,6 +152,7 @@ var displayWeather = function(data, city, country) {
     currentWeatherEl.append(cardEl);
 };
 
+// function to update DOM with forecast
 var displayForecast = function(data) {
     // reset DOM
     forecastEl.text("");
@@ -197,13 +208,105 @@ var displayForecast = function(data) {
     }
 };
 
-// button handlers
+// function to add search to history
+var searchHistUpdate = function(userSearch) {
+    // add to searchHistArr
+    searchHistArr.push(userSearch);
+
+    // save local
+    saveLocal();
+
+    // call displaySearchHist
+    displaySearchHist();
+};
+
+// function to display search history to DOM
+var displaySearchHist = function() {
+    // clear search history area of DOM
+    searchHistEl.text("");
+
+    // loop through search history array and display to DOM
+    for(var i = 0; i < searchHistArr.length; i++) {
+        // create a clickable DOM element
+        var searchEl = $("<a>").attr("href", "#");
+        
+        var textEl = $("<div>").text(searchHistArr[i]).addClass("bg-secondary rounded-pill text-center mb-2 text-light p-1");
+        searchEl.append(textEl);
+
+
+        searchHistEl.prepend(searchEl);
+    }
+};
+
+
+// function to save search history
+var saveLocal = function() {
+    // save local
+    localStorage.setItem("weatherSearchHist", JSON.stringify(searchHistArr));
+};
+
+// function to pull search history and update DOM
+var getLocal = function() {
+    // get local
+    searchHistArr = JSON.parse(localStorage.getItem("weatherSearchHist"));
+    if(!searchHistArr) {
+        searchHistArr = [];
+    }
+
+    // update dom
+    displaySearchHist();
+
+    // run resent search through api
+    if(searchHistArr.length > 0) {
+        var index = searchHistArr.length - 1;
+        APISearch(searchHistArr[index])
+    }
+};
+
+// click handlers
+// new search
 $("#searchBtn").click(function(event) {
     event.preventDefault();
 
+    // get user entry
     var userSearch = $("#userSearch").val();
 
+    // check that a search item was entered
+    if(!userSearch) {
+        currentWeatherEl.text("Please enter a valid search.").attr("class", "bg-danger text-center p-2");
+        forecastEl.text("");
+        return;
+    }
+
+    // pass user entry to API
     APISearch(userSearch);
+
+    // pass user entry to searchHistUpdate function
+    searchHistUpdate(userSearch);
 
     $("#userSearch").val("");
 });
+
+// clear search history
+$("#clearBtn").click(function() {
+    // re-set searchHistArr
+    searchHistArr = [];
+
+    // remove localStorage
+    localStorage.removeItem("weatherSearchHist");
+
+    // update DOM
+    searchHistEl.text("");
+    currentWeatherEl.text("").attr("class", "");
+    forecastEl.text("");
+});
+
+// handler for search history item clicked
+$("#searchHistory").on("click", "div", function() {
+    // get target textContent
+    var prevSearch = this.textContent;
+    // pass clicked textContent into API array
+    APISearch(prevSearch);
+});
+
+getLocal();
