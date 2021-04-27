@@ -210,8 +210,11 @@ var displayForecast = function(data) {
 
 // function to add search to history
 var searchHistUpdate = function(userSearch) {
-    // add to searchHistArr
-    searchHistArr.push(userSearch);
+    // check to see if the userSearch already exists, if not push to array
+    if (!searchHistArr.includes(userSearch)) {
+        // add to searchHistArr
+        searchHistArr.push(userSearch);
+    }
 
     // save local
     saveLocal();
